@@ -1,6 +1,5 @@
 import "./globals.css"
 import { Navbar } from "@/components/Navbar"
-import { ChatPanel } from "@/components/ChatPanel"
 
 export const metadata = {
   title: "My Expense Tracker",
@@ -26,10 +25,9 @@ export default function RootLayout({ children }) {
           <ToastProvider>
             <Navbar />
             <div className="flex relative">
-              <main className="flex-1 p-4 lg:p-8 lg:mr-80 min-h-[calc(100vh-3.5rem)]">
+              <main className="flex-1 p-4 lg:p-8 min-h-[calc(100vh-3.5rem)]">
                 {children}
               </main>
-              <ChatPanel />
             </div>
           </ToastProvider>
         </ThemeProvider>
