@@ -5,6 +5,9 @@ import { ChatPanel } from "@/components/ChatPanel"
 export const metadata = {
   title: "My Expense Tracker",
   description: "Track your personal expenses with AI",
+  icons: {
+    icon: '/icon.png',
+  },
 }
 
 import { ToastProvider } from "@/context/ToastContext"
