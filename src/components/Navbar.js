@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Wallet, User } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function Navbar() {
     const pathname = usePathname()
@@ -13,6 +14,7 @@ export function Navbar() {
         { href: "/add-expense", label: "Add Expense" },
         { href: "/add-savings", label: "Add Savings" },
         { href: "/wallet", label: "Wallet" },
+        { href: "/chat", label: "AI Assistant" },
     ]
 
     return (
@@ -39,6 +41,7 @@ export function Navbar() {
                 </div>
 
                 <div className="ml-auto flex items-center gap-4">
+                    <ModeToggle />
                     <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center border">
                         <User className="h-5 w-5" />
                     </div>

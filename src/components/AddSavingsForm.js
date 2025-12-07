@@ -9,7 +9,10 @@ import { supabase } from "@/lib/supabaseClient"
 
 const MODES = ["Cash", "Online"]
 
+import { useToast } from "@/context/ToastContext"
+
 export function AddSavingsForm({ onSuccess }) {
+    const { addToast } = useToast()
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         amount: "",
@@ -44,12 +47,12 @@ export function AddSavingsForm({ onSuccess }) {
                 date: new Date().toISOString().split('T')[0]
             })
 
-            alert("Savings added successfully!")
+            addToast("Savings added successfully!", "success")
             if (onSuccess) onSuccess()
 
         } catch (error) {
             console.error('Error adding savings:', error)
-            alert('Error adding savings. Make sure the "savings" table exists in Supabase.')
+            addToast('Error adding savings. Make sure the "savings" table exists in Supabase.', "error")
         } finally {
             setLoading(false)
         }

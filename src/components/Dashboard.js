@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Loader2, DollarSign, Calendar, CreditCard } from "lucide-react"
 import { format } from "date-fns"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
@@ -14,6 +16,9 @@ export function Dashboard() {
     const [savings, setSavings] = useState([])
     const [loading, setLoading] = useState(true)
     const [filterCategory, setFilterCategory] = useState("All")
+    const [filterPaymentMode, setFilterPaymentMode] = useState("All")
+    const [filterDate, setFilterDate] = useState("")
+    const [visibleCount, setVisibleCount] = useState(10)
 
     const fetchData = async () => {
         setLoading(true)
@@ -70,6 +75,13 @@ export function Dashboard() {
     }, {})
 
     const pieChartData = Object.entries(expensesByCategory).map(([name, value]) => ({ name, value }))
+
+    // Filtered Expenses for List
+    const filteredExpensesList = expenses.filter(expense => {
+        const matchesMode = filterPaymentMode === "All" || expense.payment_mode === filterPaymentMode
+        const matchesDate = !filterDate || expense.date === filterDate
+        return matchesMode && matchesDate
+    })
 
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
@@ -176,22 +188,61 @@ export function Dashboard() {
 
             {/* Recent Transactions */}
             <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Recent Transactions</CardTitle>
+                    <div className="flex gap-2">
+                        <select
+                            className="h-9 w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            value={filterPaymentMode}
+                            onChange={(e) => setFilterPaymentMode(e.target.value)}
+                        >
+                            <option value="All">All Modes</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                        </select>
+                        <Input
+                            type="date"
+                            className="w-[150px]"
+                            value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}
+                        />
+                        {(filterPaymentMode !== "All" || filterDate) && (
+                            <Button variant="ghost" size="sm" onClick={() => { setFilterPaymentMode("All"); setFilterDate(""); }}>
+                                Clear
+                            </Button>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {expenses.slice(0, 5).map((expense) => (
-                            <div key={expense.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-medium">{expense.title}</p>
-                                    <p className="text-sm text-muted-foreground">{format(new Date(expense.date), 'MMM d, yyyy')} • {expense.category}</p>
-                                </div>
-                                <div className="font-bold">
-                                    ₹{expense.amount.toFixed(2)}
-                                </div>
-                            </div>
-                        ))}
+                        {filteredExpensesList.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-4">No transactions found matching filters.</p>
+                        ) : (
+                            <>
+                                {filteredExpensesList.slice(0, visibleCount).map((expense) => (
+                                    <div key={expense.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                        <div>
+                                            <p className="font-medium">{expense.title}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {format(new Date(expense.date), 'MMM d, yyyy')} • {expense.category} • {expense.payment_mode || 'Cash'}
+                                            </p>
+                                        </div>
+                                        <div className="font-bold">
+                                            ₹{expense.amount.toFixed(2)}
+                                        </div>
+                                    </div>
+                                ))}
+                                {visibleCount < filteredExpensesList.length && (
+                                    <Button
+                                        variant="outline"
+                                        className="w-full mt-4"
+                                        onClick={() => setVisibleCount(prev => prev + 10)}
+                                    >
+                                        View More
+                                    </Button>
+                                )}
+                            </>
+                        )}
                     </div>
                 </CardContent>
             </Card>

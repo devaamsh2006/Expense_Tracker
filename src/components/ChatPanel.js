@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Send, Bot, User, MessageCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,6 +47,11 @@ export function ChatPanel() {
             setIsLoading(false)
         }
     }
+
+    const pathname = usePathname()
+
+    // Don't show the side panel if we are on the dedicated chat page
+    if (pathname === '/chat') return null
 
     return (
         <>

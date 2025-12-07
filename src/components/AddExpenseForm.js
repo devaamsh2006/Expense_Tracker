@@ -9,7 +9,10 @@ import { supabase } from "@/lib/supabaseClient"
 
 const CATEGORIES = ["Food", "Travel", "Bills", "Shopping", "Entertainment", "Other"]
 
+import { useToast } from "@/context/ToastContext"
+
 export function AddExpenseForm({ onSuccess }) {
+    const { addToast } = useToast()
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         title: "",
@@ -50,12 +53,12 @@ export function AddExpenseForm({ onSuccess }) {
                 date: new Date().toISOString().split('T')[0]
             })
 
-            alert("Expense added successfully!")
+            addToast("Expense added successfully!", "success")
             if (onSuccess) onSuccess()
 
         } catch (error) {
             console.error('Error adding expense:', error)
-            alert('Error adding expense. Make sure Supabase is connected.')
+            addToast('Error adding expense. Make sure Supabase is connected.', "error")
         } finally {
             setLoading(false)
         }

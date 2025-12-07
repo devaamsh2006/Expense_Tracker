@@ -17,13 +17,11 @@ export async function POST(req) {
             .from('expenses')
             .select('*')
             .order('date', { ascending: false })
-            .limit(50) // Limit context to last 50 transactions to save tokens
 
         const { data: savings, error: savingsError } = await supabase
             .from('savings')
             .select('*')
             .order('date', { ascending: false })
-            .limit(20)
 
         if (expensesError || savingsError) {
             console.error("Database error:", expensesError || savingsError)

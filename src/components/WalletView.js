@@ -4,11 +4,16 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Wallet, CreditCard } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export function WalletView() {
     const [loading, setLoading] = useState(true)
     const [balances, setBalances] = useState({ cash: 0, online: 0 })
     const [history, setHistory] = useState([])
+    const [visibleCount, setVisibleCount] = useState(10)
+    const [filterMode, setFilterMode] = useState("All")
+    const [filterDate, setFilterDate] = useState("")
 
     const fetchData = async () => {
         setLoading(true)
@@ -62,6 +67,13 @@ export function WalletView() {
         fetchData()
     }, [])
 
+    // Filter History
+    const filteredHistory = history.filter(item => {
+        const matchesMode = filterMode === "All" || item.mode === filterMode
+        const matchesDate = !filterDate || item.date === filterDate
+        return matchesMode && matchesDate
+    })
+
     if (loading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
     }
@@ -94,25 +106,58 @@ export function WalletView() {
             </div>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Savings / Income History</CardTitle>
+                    <div className="flex gap-2">
+                        <select
+                            className="h-9 w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            value={filterMode}
+                            onChange={(e) => setFilterMode(e.target.value)}
+                        >
+                            <option value="All">All Modes</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                        </select>
+                        <Input
+                            type="date"
+                            className="w-[150px]"
+                            value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}
+                        />
+                        {(filterMode !== "All" || filterDate) && (
+                            <Button variant="ghost" size="sm" onClick={() => { setFilterMode("All"); setFilterDate(""); }}>
+                                Clear
+                            </Button>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {history.length === 0 ? (
-                            <p className="text-muted-foreground text-center py-4">No savings recorded yet.</p>
+                        {filteredHistory.length === 0 ? (
+                            <p className="text-muted-foreground text-center py-4">No savings recorded yet matching filters.</p>
                         ) : (
-                            history.map((item) => (
-                                <div key={item.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                                    <div>
-                                        <p className="font-medium">{item.description || "Added Savings"}</p>
-                                        <p className="text-sm text-muted-foreground">{item.date} • {item.mode}</p>
+                            <>
+                                {filteredHistory.slice(0, visibleCount).map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                        <div>
+                                            <p className="font-medium">{item.description || "Added Savings"}</p>
+                                            <p className="text-sm text-muted-foreground">{item.date} • {item.mode}</p>
+                                        </div>
+                                        <div className="font-bold text-green-600">
+                                            +₹{item.amount.toFixed(2)}
+                                        </div>
                                     </div>
-                                    <div className="font-bold text-green-600">
-                                        +₹{item.amount.toFixed(2)}
-                                    </div>
-                                </div>
-                            ))
+                                ))}
+                                {visibleCount < filteredHistory.length && (
+                                    <Button
+                                        variant="outline"
+                                        className="w-full mt-4"
+                                        onClick={() => setVisibleCount(prev => prev + 10)}
+                                    >
+                                        View More
+                                    </Button>
+                                )}
+                            </>
                         )}
                     </div>
                 </CardContent>

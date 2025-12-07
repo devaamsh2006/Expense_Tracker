@@ -7,17 +7,29 @@ export const metadata = {
   description: "Track your personal expenses with AI",
 }
 
+import { ToastProvider } from "@/context/ToastContext"
+import { ThemeProvider } from "@/components/theme-provider"
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <Navbar />
-        <div className="flex relative">
-          <main className="flex-1 p-4 lg:p-8 lg:mr-80 min-h-[calc(100vh-3.5rem)]">
-            {children}
-          </main>
-          <ChatPanel />
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ToastProvider>
+            <Navbar />
+            <div className="flex relative">
+              <main className="flex-1 p-4 lg:p-8 lg:mr-80 min-h-[calc(100vh-3.5rem)]">
+                {children}
+              </main>
+              <ChatPanel />
+            </div>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
