@@ -13,7 +13,7 @@ export function WalletView() {
     const [history, setHistory] = useState([])
     const [visibleCount, setVisibleCount] = useState(10)
     const [filterMode, setFilterMode] = useState("All")
-    const [filterDate, setFilterDate] = useState("")
+    const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0])
 
     const fetchData = async () => {
         setLoading(true)
@@ -106,11 +106,11 @@ export function WalletView() {
             </div>
 
             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                     <CardTitle>Savings / Income History</CardTitle>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <select
-                            className="h-9 w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            className="h-9 w-full sm:w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             value={filterMode}
                             onChange={(e) => setFilterMode(e.target.value)}
                         >
@@ -118,12 +118,14 @@ export function WalletView() {
                             <option value="Cash">Cash</option>
                             <option value="Online">Online</option>
                         </select>
-                        <Input
-                            type="date"
-                            className="w-[150px]"
-                            value={filterDate}
-                            onChange={(e) => setFilterDate(e.target.value)}
-                        />
+                        <div className="relative w-full sm:w-[150px]">
+                            <Input
+                                type="date"
+                                className="w-full justify-between text-left font-normal"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                            />
+                        </div>
                         {(filterMode !== "All" || filterDate) && (
                             <Button variant="ghost" size="sm" onClick={() => { setFilterMode("All"); setFilterDate(""); }}>
                                 Clear

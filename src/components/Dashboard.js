@@ -17,7 +17,7 @@ export function Dashboard() {
     const [loading, setLoading] = useState(true)
     const [filterCategory, setFilterCategory] = useState("All")
     const [filterPaymentMode, setFilterPaymentMode] = useState("All")
-    const [filterDate, setFilterDate] = useState("")
+    const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0])
     const [visibleCount, setVisibleCount] = useState(10)
 
     const fetchData = async () => {
@@ -152,7 +152,12 @@ export function Dashboard() {
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" tickFormatter={(str) => format(new Date(str), 'MMM d')} />
                                 <YAxis />
-                                <Tooltip labelFormatter={(str) => format(new Date(str), 'MMM d, yyyy')} />
+                                <Tooltip
+                                    labelFormatter={(str) => format(new Date(str), 'MMM d, yyyy')}
+                                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--popover-foreground))' }}
+                                    itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                                    labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                                />
                                 <Line type="monotone" dataKey="amount" stroke="#8884d8" strokeWidth={2} />
                             </LineChart>
                         </ResponsiveContainer>
@@ -179,7 +184,10 @@ export function Dashboard() {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--popover-foreground))' }}
+                                    itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -188,11 +196,11 @@ export function Dashboard() {
 
             {/* Recent Transactions */}
             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                     <CardTitle>Recent Transactions</CardTitle>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <select
-                            className="h-9 w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            className="h-9 w-full sm:w-[120px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             value={filterPaymentMode}
                             onChange={(e) => setFilterPaymentMode(e.target.value)}
                         >
@@ -200,12 +208,14 @@ export function Dashboard() {
                             <option value="Cash">Cash</option>
                             <option value="Online">Online</option>
                         </select>
-                        <Input
-                            type="date"
-                            className="w-[150px]"
-                            value={filterDate}
-                            onChange={(e) => setFilterDate(e.target.value)}
-                        />
+                        <div className="relative w-full sm:w-[150px]">
+                            <Input
+                                type="date"
+                                className="w-full justify-between text-left font-normal"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                            />
+                        </div>
                         {(filterPaymentMode !== "All" || filterDate) && (
                             <Button variant="ghost" size="sm" onClick={() => { setFilterPaymentMode("All"); setFilterDate(""); }}>
                                 Clear

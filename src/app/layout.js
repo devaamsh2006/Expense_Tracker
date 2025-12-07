@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
           <ToastProvider>
             <Navbar />
             <div className="flex relative">
-              <main className="flex-1 p-4 lg:p-8 min-h-[calc(100vh-3.5rem)]">
+              <main className="flex-1 px-6 py-8 lg:p-10 min-h-[calc(100vh-3.5rem)] max-w-7xl mx-auto w-full">
                 {children}
               </main>
             </div>
